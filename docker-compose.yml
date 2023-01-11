@@ -1,0 +1,36 @@
+version: "3.2"
+services:
+  rabbitmq:
+    image: rabbitmq:3.11-management
+    container_name: "rabbitmq-server"
+    ports:
+      - 8000:5672
+      - 15672:15672
+    volumes:
+      - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+      - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+    networks:
+      - rabbitmq-redis
+  redis:
+    image: redis
+    container_name: "redis-server"
+    ports:
+      - 6000:6379
+    networks:
+      - rabbitmq-redis
+  mongo:
+    image: mongo
+    container_name: "mongo-server"
+    ports:
+      - 27000:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root1234
+    networks:
+      - rabbitmq-redis
+networks:
+  rabbitmq-redis:
+    external: false
+    driver: bridge
+    name: rabbitmq-redis
+#Run :  docker-compose up
